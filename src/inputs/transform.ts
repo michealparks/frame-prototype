@@ -51,7 +51,9 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
     params.extents.y = size
     params.extents.z = size
 
-    colliderInput = pane.addInput(params, 'extents').on('change', () => {
+    colliderInput = pane.addInput(params, 'extents', {
+      min: 0
+    }).on('change', () => {
       collider.scale.x = params.extents.x * 10
       collider.scale.y = params.extents.y * 10
       collider.scale.z = params.extents.z * 10
@@ -89,7 +91,6 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
 }
 
 export const addTransformInputs = (pane: Pane, object3D: THREE.Object3D) => {
-  pane.addSeparator()
   const posInput = pane.addInput(object3D, 'position', { min: -5, max: 5, step: 0.05 })
   const rotInput = pane.addInput(object3D, 'rotation', { step: 0.05 })
   const collider = object3D.getObjectByName('collider') as THREE.Mesh

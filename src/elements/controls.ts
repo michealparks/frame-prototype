@@ -5,12 +5,10 @@ import * as THREE from 'three'
 import { addForwardHelper } from '../inputs/forward'
 
 export const controls = new Container()
+controls.dom.classList.add('relative', 'h-screen', 'w-auto', 'min-w-[300px]', 'bg-white')
 controls.dom.setAttribute('style', `
-  position: relative;
-  height: 100vh;
-  background: #28292e;
-  width: 100%;
-  min-width: 300px;
+  overflow-x: hidden;
+  overflow-y: scroll;
 `)
 
 const pane = new Pane({ container: controls.dom })

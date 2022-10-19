@@ -118,10 +118,10 @@ export class TreeView extends Container {
       CLASS_ROOT,
       'z-10',
       'absolute',
-      'bg-default-gray',
+      'bg-white',
       'text-white',
       'min-w-max',
-      'font-mono',
+      'text-black',
       'text-[11px]'
     )
 

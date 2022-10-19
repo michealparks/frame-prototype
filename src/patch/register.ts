@@ -8,6 +8,10 @@ const treeItemToObject = new WeakMap<TreeViewItem, THREE.Object3D>()
 let disposer: null | (() => void) = null
 
 treeview.on('select', (item: TreeViewItem) => {
+  if (item.text === 'World') {
+    return
+  }
+
   const object3D = treeItemToObject.get(item)!
   disposer = addObjectInputs(object3D)
 })

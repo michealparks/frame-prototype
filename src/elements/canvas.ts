@@ -5,13 +5,14 @@ renderer.setClearColor(0xFFFFFF)
 
 export const canvas = new Container()
 canvas.resizable = 'right'
+canvas.resizeMin = 0
 canvas.resizeMax = Infinity
 canvas.dom.setAttribute('style', `
+  float: left;
   position: relative;
-  width: 100%;
   height: 100vh;
-  min-width: 500px;
 `)
+canvas.dom.style.width = `${(window.innerWidth * 2) / 3}px`
 
 renderer.domElement.setAttribute('style', `
   width: 100% !important;
