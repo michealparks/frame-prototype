@@ -16,12 +16,18 @@ treeview.on('select', (item: TreeViewItem) => {
   disposer = addObjectInputs(object3D)
 })
 
-treeview.on('reparent', (items: TreeViewItem[]) => {
+treeview.on('reparent', (items: { item: TreeViewItem; newParent: TreeViewItem }[]) => {
   for (let { item, newParent } of items) {
     const object = treeItemToObject.get(item)!
     const parent = treeItemToObject.get(newParent)!
     parent.attach(object)
   }
+})
+
+treeview.on('rename', (item: TreeViewItem) => {
+  const object3D = treeItemToObject.get(item)!
+  const { component } = object3D.userData
+  component.name = item.text
 })
 
 treeview.on('deselect', () => {

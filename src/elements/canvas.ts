@@ -12,7 +12,7 @@ canvas.dom.setAttribute('style', `
   position: relative;
   height: 100vh;
 `)
-canvas.dom.style.width = `${(window.innerWidth * 2) / 3}px`
+canvas.dom.style.width = `${(window.innerWidth * 3) / 4}px`
 
 renderer.domElement.setAttribute('style', `
   width: 100% !important;

@@ -1,14 +1,20 @@
 import type { Pane, InputBindingApi } from 'tweakpane'
 import * as THREE from 'three'
+import { Component } from '../config/types';
 
-const enum colliderTypes {
+/**
+ * Arm and gantry problemz
+ * cannot add geometry, geometry is added by model json,
+ */
+
+const enum geometries {
   NONE,
   BOX,
   SPHERE
 }
 
 interface Params {
-  colliderType: colliderTypes;
+  geometry: geometries;
   radius: number;
   extents: {
       x: number;
@@ -29,7 +35,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
     arrow?.position.setZ((collider.scale.z / 10) - 0.2)
   }
 
-  if (params.colliderType === colliderTypes.BOX) {
+  if (params.geometry === geometries.BOX) {
 
     if (!collider) {
       const geo = new THREE.BoxGeometry(size, size, size)
@@ -38,7 +44,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
       mat.opacity = opacity
       collider = new THREE.Mesh(geo, mat)
       collider.name = 'collider'
-      collider.userData.type = colliderTypes.BOX
+      collider.userData.type = geometries.BOX
       object3D.add(collider)
 
       const geometry = new THREE.BoxGeometry(size, size, size)
@@ -46,7 +52,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
       const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) )
       collider.add( line )
     }
-    
+
     params.extents.x = size
     params.extents.y = size
     params.extents.z = size
@@ -60,7 +66,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
       updateArrow()
     })
 
-  } else if (params.colliderType === colliderTypes.SPHERE) {
+  } else if (params.geometry === geometries.SPHERE) {
 
     if (!collider) {
       const geo = new THREE.SphereGeometry(size)
@@ -69,7 +75,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
       mat.opacity = opacity
       collider = new THREE.Mesh(geo, mat)
       collider.name = 'collider'
-      collider.userData.type = colliderTypes.SPHERE
+      collider.userData.type = geometries.SPHERE
       object3D.add(collider)
 
       const geometry = new THREE.SphereGeometry(size)
@@ -91,30 +97,45 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
 }
 
 export const addTransformInputs = (pane: Pane, object3D: THREE.Object3D) => {
-  const posInput = pane.addInput(object3D, 'position', { min: -5, max: 5, step: 0.05 })
-  const rotInput = pane.addInput(object3D, 'rotation', { step: 0.05 })
+  const posInput = pane.addInput(object3D, 'position', {
+    min: -5,
+    max: 5,
+    step: 0.01,
+  })
+
+  const rotInput = pane.addInput(object3D, 'rotation', {
+    step: 0.01
+  })
   const collider = object3D.getObjectByName('collider') as THREE.Mesh
 
   const params = {
-    colliderType: collider ? collider.userData.type : colliderTypes.NONE,
+    geometry: collider ? collider.userData.type : geometries.NONE,
     radius: 0,
     extents: { x: 0, y: 0, z: 0 },
   }
 
-  pane.addInput(params, 'colliderType', {
-    options: {
-      none: colliderTypes.NONE,
-      box: colliderTypes.BOX,
-      sphere: colliderTypes.SPHERE,
-    }
-  }).on('change', () => {
-    if (collider) object3D.remove(collider)
-    if (colliderInput) colliderInput.dispose()
+  const component = object3D.userData.component as Component
 
-    colliderInput = addColliderInputs(object3D, pane, params, undefined!)
-  })
+  let colliderInput: InputBindingApi<any, any> | undefined
 
-  let colliderInput = addColliderInputs(object3D, pane, params, collider)
+  if (component.type === 'arm' || component.type === 'gantry') {
+
+  } else {
+    pane.addInput(params, 'geometry', {
+      options: {
+        none: geometries.NONE,
+        box: geometries.BOX,
+        sphere: geometries.SPHERE,
+      }
+    }).on('change', () => {
+      if (collider) object3D.remove(collider)
+      if (colliderInput) colliderInput.dispose()
+  
+      colliderInput = addColliderInputs(object3D, pane, params, undefined!)
+    })  
+
+    colliderInput = addColliderInputs(object3D, pane, params, collider)
+  }
 
   return () => {
     colliderInput?.dispose()
