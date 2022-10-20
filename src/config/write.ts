@@ -89,7 +89,7 @@ export const writeConfig = async () => {
     }
   }
 
-  await navigator.clipboard.writeText(JSON.stringify(config))
+  await navigator.clipboard.writeText(JSON.stringify(config, null, 2))
 
   window.alert('Config written to clipboard!')
 }

@@ -33,7 +33,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
 
   const updateArrow = () => {
     const arrow = collider?.parent?.getObjectByName('forward') as THREE.ArrowHelper
-    arrow?.position.setZ((collider.scale.z / 10) - 0.2)
+    arrow?.position.setY((collider.scale.y / 10) - 0.2)
   }
 
   if (params.geometry === geometries.BOX) {
@@ -46,6 +46,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
       collider = new THREE.Mesh(geo, mat)
       collider.name = 'collider'
       collider.userData.type = geometries.BOX
+      object3D.userData.collider = collider
       object3D.add(collider)
 
       const geometry = new THREE.BoxGeometry(size, size, size)
@@ -77,10 +78,11 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
       collider = new THREE.Mesh(geo, mat)
       collider.name = 'collider'
       collider.userData.type = geometries.SPHERE
+      object3D.userData.collider = collider
       object3D.add(collider)
 
       const geometry = new THREE.SphereGeometry(size)
-      const edges = new THREE.EdgesGeometry( geometry, 5 )
+      const edges = new THREE.EdgesGeometry(geometry, 5)
       const line = new THREE.LineSegments( edges, new THREE.LineBasicMaterial( { color: 0x000000 } ) )
       collider.add( line )
     }
@@ -98,7 +100,7 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
 }
 
 export const addTransformInputs = (pane: Pane, object3D: THREE.Object3D) => {
-  const collider = object3D.getObjectByName('collider') as THREE.Mesh
+  const { collider } = object3D.userData
   const position = object3D.position.clone()
   positionToViamTranslation(object3D.position, position)
 
@@ -130,6 +132,7 @@ export const addTransformInputs = (pane: Pane, object3D: THREE.Object3D) => {
   const component = object3D.userData.component as Component
 
   let colliderInput: InputBindingApi<any, any> | undefined
+  let colliderTypeInput: InputBindingApi<any, any> | undefined
 
   if (component.type === 'arm' || component.type === 'gantry') {
     pane.addMonitor({
@@ -138,7 +141,7 @@ export const addTransformInputs = (pane: Pane, object3D: THREE.Object3D) => {
       multiline: true
     })
   } else {
-    pane.addInput(params, 'geometry', {
+    colliderTypeInput = pane.addInput(params, 'geometry', {
       options: {
         none: geometries.NONE,
         box: geometries.BOX,
@@ -156,6 +159,7 @@ export const addTransformInputs = (pane: Pane, object3D: THREE.Object3D) => {
 
   return () => {
     colliderInput?.dispose()
+    colliderTypeInput?.dispose()
     posInput.dispose()
     rotInput.dispose()
   }

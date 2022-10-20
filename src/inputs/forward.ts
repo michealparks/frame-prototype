@@ -5,7 +5,7 @@ export const addForwardHelper = (object3D: THREE.Object3D) => {
   const color = 0x000000
   const headLength = 0.1
   const headWidth = 0.05
-  const helper = new THREE.ArrowHelper(undefined, undefined, length, color, headLength, headWidth)
+  const helper = new THREE.ArrowHelper(new THREE.Vector3(0, 1, 0), undefined, length, color, headLength, headWidth)
   helper.name = 'forward'
   helper.userData.noTree = true
 
