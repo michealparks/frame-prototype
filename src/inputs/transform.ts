@@ -1,6 +1,7 @@
 import type { Pane, InputBindingApi } from 'tweakpane'
 import * as THREE from 'three'
-import { Component } from '../config/types';
+import { Component } from '../config/types'
+import { positionToViamTranslation, viamTranslateToPosition } from '../config/coordinates'
 
 /**
  * Arm and gantry problemz
@@ -97,29 +98,45 @@ const addColliderInputs = (object3D: THREE.Object3D, pane: Pane, params: Params,
 }
 
 export const addTransformInputs = (pane: Pane, object3D: THREE.Object3D) => {
-  const posInput = pane.addInput(object3D, 'position', {
-    min: -5,
-    max: 5,
-    step: 0.01,
-  })
-
-  const rotInput = pane.addInput(object3D, 'rotation', {
-    step: 0.01
-  })
   const collider = object3D.getObjectByName('collider') as THREE.Mesh
+  const position = object3D.position.clone()
+  positionToViamTranslation(object3D.position, position)
 
   const params = {
+    position,
+    rotation: { x: 0, y: 0, z: 0 },
     geometry: collider ? collider.userData.type : geometries.NONE,
     radius: 0,
     extents: { x: 0, y: 0, z: 0 },
   }
+  
+  const posInput = pane.addInput(params, 'position', {
+    min: -5,
+    max: 5,
+    step: 0.01,
+  }).on('change', () => {
+    viamTranslateToPosition(params.position, object3D.position)
+  })
+
+  const rotInput = pane.addInput(params, 'rotation', {
+    step: 0.01
+  }).on('change', () => {
+    const { x, y, z } = params.rotation
+    object3D.rotation.x = -y
+    object3D.rotation.y = z
+    object3D.rotation.z = x
+  })
 
   const component = object3D.userData.component as Component
 
   let colliderInput: InputBindingApi<any, any> | undefined
 
   if (component.type === 'arm' || component.type === 'gantry') {
-
+    pane.addMonitor({
+      message: 'arm and gantry geometry is added by model json and cannot be edited'
+    }, 'message', {
+      multiline: true
+    })
   } else {
     pane.addInput(params, 'geometry', {
       options: {

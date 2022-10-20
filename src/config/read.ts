@@ -3,13 +3,20 @@ import * as THREE from 'three'
 import { scene } from 'three-kit'
 import type { Config, Component } from './types'
 import { setConfig } from './store'
+import { viamQuaternionToQuaternion, viamTranslateToPosition } from './coordinates'
 
 const meshes: THREE.Mesh[] = []
+const newObjects: THREE.Object3D[] = []
 
 const createEntry = (component: Component) => {
   const object = new THREE.Object3D()
   object.name = component.name
   object.userData.component = component
+
+  if (component.frame !== undefined) {
+    viamTranslateToPosition(component.frame.translation, object.position)
+    viamQuaternionToQuaternion(component.frame.orientation.value, object.quaternion)
+  }
 
   const size = 0.05
   const geo = new THREE.OctahedronGeometry(size)
@@ -28,7 +35,7 @@ const createEntry = (component: Component) => {
 
   meshes.push(mesh)
 
-  scene.add(object)
+  newObjects.push(object)
 }
 
 const parseText = (text: string): unknown => {
@@ -38,6 +45,11 @@ const parseText = (text: string): unknown => {
 export const readConfig = async () => {
   const text = await navigator.clipboard.readText()
   const json = parseText(text) as Config | undefined
+
+  scene.clear()
+
+  const grid = new THREE.GridHelper(2, 10, 0x000000, 0x000000)
+  scene.add(grid)
 
   if (json === undefined || Array.isArray(json.components) === false) {
     return window.alert('JSON is not valid')
@@ -49,6 +61,15 @@ export const readConfig = async () => {
 
   for (const component of json.components) {
     createEntry(component)
+  }
+
+  for (const object of newObjects) {
+    const parentName = object.userData.component.frame?.parent as string | undefined
+    if (parentName && parentName?.toLowerCase() !== 'world') {
+      scene.getObjectByName(parentName)!.add(object)
+    } else {
+      scene.add(object)
+    }
   }
 
   setConfig(json)

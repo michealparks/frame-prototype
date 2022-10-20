@@ -13,7 +13,7 @@ export default {
   kit__RENDERER_SHADOWMAP: true,
   kit__RENDERER_SHADOWMAP_SIZE: 2048,
   kit__RENDERER_SHADOWMAP_TYPE: '"basic"',
-  kit__RENDERER_DPI: 1.5,
+  kit__RENDERER_DPI: 1.75,
 
   // Soft shadows
   kit__PCSS: false,

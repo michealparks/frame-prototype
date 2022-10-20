@@ -4,13 +4,13 @@ export const enum geometries {
   SPHERE
 }
 
-interface Translation {
+export interface Translation {
   x: number
   y: number
   z: number
 }
 
-interface Quaternion {
+export interface Quaternion {
   type: 'quaternion'
   value: {
     x: number

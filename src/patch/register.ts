@@ -1,6 +1,7 @@
 import { TreeViewItem } from '../treeview/item'
 import { treeview, world } from '../elements/treeview'
 import { addObjectInputs } from '../inputs/object'
+import { Component } from '../config/types'
 
 const objectToTreeItem = new WeakMap<THREE.Object3D, TreeViewItem>()
 const treeItemToObject = new WeakMap<TreeViewItem, THREE.Object3D>()
@@ -26,8 +27,8 @@ treeview.on('reparent', (items: { item: TreeViewItem; newParent: TreeViewItem }[
 
 treeview.on('rename', (item: TreeViewItem) => {
   const object3D = treeItemToObject.get(item)!
-  const { component } = object3D.userData
-  component.name = item.text
+  const component = object3D.userData.component as Component
+  object3D.name = component.name = item.text!
 })
 
 treeview.on('deselect', () => {

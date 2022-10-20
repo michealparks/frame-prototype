@@ -1,12 +1,34 @@
+import * as THREE from 'three'
 import { getConfig } from './store'
 import { scene } from 'three-kit'
 import { geometries } from './types'
+import { positionToViamTranslation } from './coordinates'
 
-const createTranslation = (input: THREE.Vector3) => {
+const euler1 = new THREE.Euler()
+const euler2 = new THREE.Euler()
+const quat = new THREE.Quaternion()
+
+const createTranslation = (position: THREE.Vector3) => {
+  const translation = { x: 0, y: 0, z: 0 }
+  positionToViamTranslation(position, translation)
+  return translation
+}
+
+const createRotation = (quaternion: THREE.Quaternion) => {
+  euler1.setFromQuaternion(quaternion)
+  euler2.x = -euler1.y
+  euler2.y = euler1.z
+  euler2.z = euler1.x
+  quat.setFromEuler(euler2)
+
   return {
-    x: input.x,
-    y: input.y,
-    z: input.z,
+    type: 'quaternion' as const,
+    value: {
+      x: quat.x,
+      y: quat.y,
+      z: quat.z,
+      w: quat.w,
+    },
   }
 }
 
@@ -18,15 +40,7 @@ const createFrame = (
   return {
     parent,
     translation: createTranslation(position),
-    orientation: {
-      type: 'quaternion' as const,
-      value: {
-        x: quaterion.x,
-        y: quaterion.y,
-        z: quaterion.z,
-        w: quaterion.w,
-      },
-    }
+    orientation: createRotation(quaterion),
   }
 }
 

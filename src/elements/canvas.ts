@@ -7,11 +7,7 @@ export const canvas = new Container()
 canvas.resizable = 'right'
 canvas.resizeMin = 0
 canvas.resizeMax = Infinity
-canvas.dom.setAttribute('style', `
-  float: left;
-  position: relative;
-  height: 100vh;
-`)
+canvas.dom.classList.add('relative', 'float-left', 'h-screen')
 canvas.dom.style.width = `${(window.innerWidth * 3) / 4}px`
 
 renderer.domElement.setAttribute('style', `

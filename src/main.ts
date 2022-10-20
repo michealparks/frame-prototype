@@ -1,13 +1,14 @@
+import * as THREE from 'three'
+
 import './main.css'
 import './patch/object3d'
 import { canvas } from './elements/canvas'
 import { controls } from './elements/controls'
 import './elements/treeview'
-import * as THREE from 'three'
 import { run, scene, camera, renderer, update, lights } from 'three-kit'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-camera.position.set(1, 1, 1)
+camera.position.set(0, 1, 1)
 
 const light = lights.createDirectional()
 light.position.set(1, 1, 1)
@@ -19,6 +20,8 @@ scene.add(grid)
 {
   const controls = new OrbitControls(camera, renderer.domElement)
   controls.enableDamping = true
+  controls.minZoom = 0.5
+  controls.maxZoom = 5
 
   update(() => {
     controls.update()
@@ -29,4 +32,3 @@ document.body.append(canvas.dom)
 document.body.append(controls.dom)
 
 run()
-
