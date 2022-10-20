@@ -8,7 +8,7 @@ import './elements/treeview'
 import { run, scene, camera, renderer, update, lights } from 'three-kit'
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls'
 
-camera.position.set(0, 1, 1)
+camera.position.set(1, 1, 1)
 
 const light = lights.createDirectional()
 light.position.set(1, 1, 1)
